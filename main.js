@@ -42,8 +42,8 @@ const client = new discord_js_1.default.Client({
 });
 client.on('ready', () => {
     var _a;
-    console.log('The bot is ready');
-    const guildId = "940737607866929195";
+    console.log('ready');
+    const guildId = "939617556011057262";
     const guild = client.guilds.cache.get(guildId);
     let commands;
     if (guild) {
@@ -53,28 +53,8 @@ client.on('ready', () => {
         commands = (_a = client.application) === null || _a === void 0 ? void 0 : _a.commands;
     }
     commands === null || commands === void 0 ? void 0 : commands.create({
-        name: 'access',
-        description: 'Directs user to access info',
-        options: [
-            {
-                name: 'username',
-                description: 'Enter the username this message is directed towards',
-                required: true,
-                type: discord_js_1.default.Constants.ApplicationCommandOptionTypes.STRING
-            }
-        ]
-    });
-    commands === null || commands === void 0 ? void 0 : commands.create({
-        name: 'clarity',
-        description: 'Viewing Cheggy solutions in high quality',
-        options: [
-            {
-                name: 'username',
-                description: 'Enter the username this message is directed towards',
-                required: true,
-                type: discord_js_1.default.Constants.ApplicationCommandOptionTypes.STRING
-            }
-        ]
+        name: 'covid',
+        description: 'Generates covid-19 screening form',
     });
 });
 client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0, function* () {
@@ -82,78 +62,8 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
         return;
     }
     const { commandName, options } = interaction;
-    if (commandName === 'access') {
-        const username = options.getString('username');
-        const statusEmbed = new discord_js_1.MessageEmbed()
-            .setColor("#f2690d")
-            .setAuthor({
-            name: "Cheggy",
-            iconURL: "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
-        })
-            .setTitle("How to Unlock Access to Cheggy")
-            .setDescription(`${username} for more info head over to #chegg-access`)
-            .addFields({ name: "Paid Access:", value: "For $7.50 USD you will gain lifetime access to Cheggy", inline: false }, { name: "Free Access:", value: "3+ invites: One solution every 6 hours\n10+ invites: One solution every 2 hours\n20+ invites: One solution every 1 hour\n30+ invites: One solution every 30 minutes", inline: false })
-            .setFooter({ text: 'Need more help? Feel free to open a ticket!.', iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg' });
-        yield interaction.reply({ embeds: [statusEmbed], ephemeral: false });
-        return;
-    }
-    else if (commandName === 'clarity') {
-        const username = options.getString('username');
-        const statusEmbed = new discord_js_1.MessageEmbed()
-            .setColor("#f2690d")
-            .setAuthor({
-            name: "Cheggy",
-            iconURL: "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
-        })
-            .setTitle("How to View Solutions in High Quality")
-            .setDescription(`${username} follow the steps outlined below:`)
-            .addFields({ name: "Step 1:", value: "Right click on your solution", inline: false }, { name: "Step 2:", value: "Hit open link", inline: false })
-            .setImage("https://cdn.discordapp.com/attachments/608334595510894612/944628255196082268/unknown_1.png")
-            .setFooter({ text: 'Need more help? Feel free to open a ticket!.', iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg' });
-        yield interaction.reply({ embeds: [statusEmbed], ephemeral: false });
-        return;
-    }
-    else if (commandName === 'invites') {
-        const username = options.getString('username');
-        const statusEmbed = new discord_js_1.MessageEmbed()
-            .setColor("#f2690d")
-            .setAuthor({
-            name: "Cheggy",
-            iconURL: "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
-        })
-            .setTitle("How to Create an Invite Link")
-            .setDescription(`${username} follow the steps shown below:`)
-            .setImage("https://cdn.discordapp.com/attachments/941746373332701184/944654414650671204/test.png")
-            .setFooter({ text: 'Need more help? Feel free to open a ticket!.', iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg' });
-        yield interaction.reply({ embeds: [statusEmbed], ephemeral: false });
-        return;
-    }
-}));
-client.on('messageCreate', (message) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
-    let userId = message.author.id;
-    if ([
-        "921943794910363683",
-        "938139206318968842",
-        "938139234898935808",
-        "938139257065848882",
-        "938139286035902464"
-    ].includes(message.channel.id)
-        || ((_a = message.member) === null || _a === void 0 ? void 0 : _a.roles.cache.some(role => role.name === 'Moderator'))) {
-        return;
-    }
-    else if (message.content.includes('https://www.chegg.com')) {
-        yield message.delete();
-        yield message.channel.send(`<@${userId}> I have deleted your chegg link. Please make sure to send your links in a chegg-access channel`);
-    }
-    else if (message.content.includes('https://discord.gg')) {
-        yield message.delete();
-        yield ((_b = message.member) === null || _b === void 0 ? void 0 : _b.timeout(1800000));
-        yield message.channel.send(`<@${userId}> we have placed your account under a 30 minute timeout for violating Cheggy TOS.`);
-    }
-    else if (message.content.includes('https://')) {
-        yield message.delete();
-        yield message.channel.send(`<@${userId}> I have deleted your message, please refrain from sending links.`);
+    if (commandName === 'covid') {
+        yield interaction.reply('Pong!');
     }
 }));
 client.login(process.env.TOKEN);

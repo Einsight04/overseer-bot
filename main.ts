@@ -13,7 +13,7 @@ const client = new DiscordJS.Client({
 client.on('ready', () => {
     console.log('The bot is ready')
 
-    const guildId = "940737607866929195"
+    const guildId = "938954164455764049"
     const guild = client.guilds.cache.get(guildId)
 
     let commands
@@ -48,6 +48,18 @@ client.on('ready', () => {
             }
         ]
     })
+    commands?.create({
+        name: 'invite-tutorial',
+        description: 'How to invite people properly',
+        options: [
+            {
+                name: 'username',
+                description: 'Enter the username this message is directed towards',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
+    })
 })
 
 
@@ -72,7 +84,7 @@ client.on('interactionCreate', async (interaction) => {
             .setDescription(`${username} for more info head over to #chegg-access`)
             .addFields(
                 { name: "Paid Access:", value: "For $7.50 USD you will gain lifetime access to Cheggy", inline: false },
-                { name: "Free Access:", value: "3+ invites: One solution every 6 hours\n10+ invites: One solution every 2 hours\n20+ invites: One solution every 1 hour\n30+ invites: One solution every 30 minutes", inline: false }
+                { name: "Free Access:", value: "3+ invites: One solution every 24 hours\n10+ invites: One solution every 12 hours\n20+ invites: One solution every 6 hours\n30+ invites: One solution every 3 hours", inline: false }
             )
             .setFooter({ text: 'Need more help? Feel free to open a ticket!.', iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg' });
 
@@ -101,7 +113,7 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply({ embeds: [statusEmbed], ephemeral: false });
 
         return;
-    } else if (commandName === 'invites') {
+    } else if (commandName === 'invite-tutorial') {
         const username = options.getString('username')!
         const statusEmbed = new MessageEmbed()
 
@@ -124,20 +136,17 @@ client.on('interactionCreate', async (interaction) => {
 
 
 client.on('messageCreate', async (message) => {
+    if (message.channelId == '952233637422702683') {
+        message.delete().then()
+    }
+
     let userId = message.author.id
 
-    if ([
-        "921943794910363683",
-        "938139206318968842",
-        "938139234898935808",
-        "938139257065848882",
-        "938139286035902464"
-    ].includes(message.channel.id)
-        || message.member?.roles.cache.some(role => role.name === 'Moderator')) {
+    if (message.member?.roles.cache.some(role => role.name === 'Moderator')) {
         return
     } else if (message.content.includes('https://www.chegg.com')) {
         await message.delete()
-        await message.channel.send(`<@${userId}> I have deleted your chegg link. Please make sure to send your links in a chegg-access channel`)
+        await message.channel.send(`<@${userId}> Please use the "/chegg" command in a chegg-access channel`)
     } else if (message.content.includes('https://discord.gg')) {
         await message.delete()
         await message.member?.timeout(1800000)
@@ -149,4 +158,4 @@ client.on('messageCreate', async (message) => {
 })
 
 
-client.login(process.env.TOKEN)
+client.login("")
