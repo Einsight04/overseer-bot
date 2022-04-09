@@ -1,6 +1,36 @@
 import DiscordJS, {Intents, MessageEmbed, TextChannel} from 'discord.js'
 import dotenv from 'dotenv'
 
+
+function accessMessage(username: string, support: string) {
+    return new MessageEmbed()
+
+        .setColor("#f2690d")
+        .setAuthor({
+            name: "Cheggy",
+            iconURL:
+                "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
+        })
+        .setTitle("How to Unlock Access to Cheggy")
+        .setDescription(`${username} for more info check out ${support}`)
+        .addFields(
+            {name: "Paid Access:", value: "For $7.50 USD you will gain lifetime access to Cheggy", inline: false},
+            {
+                name: "Free Access:",
+                value:
+                    "3+ invite joins: 24 hour access\n" +
+                    "10+ invite joins: 12 hour access\n" +
+                    "20+ invite joins: 6 hour access\n" +
+                    "30+ invite joins: 3 hour access",
+                inline: false
+            }
+        )
+        .setFooter({
+            text: 'Need more help? Feel free to open a ticket!',
+            iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg'
+        });
+}
+
 dotenv.config()
 
 const client = new DiscordJS.Client({
@@ -73,28 +103,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if (commandName === 'access') {
         const username = options.getString('username')!
-        const statusEmbed = new MessageEmbed()
-
-            .setColor("#f2690d")
-            .setAuthor({
-                name: "Cheggy",
-                iconURL:
-                    "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
-            })
-            .setTitle("How to Unlock Access to Cheggy")
-            .setDescription(`${username} for more info head over to #access`)
-            .addFields(
-                {name: "Paid Access:", value: "For $7.50 USD you will gain lifetime access to Cheggy", inline: false},
-                {
-                    name: "Free Access:",
-                    value: "3+ invite joins: One solution every 24 hours\n10+ invite joins: One solution every 12 hours\n20+ invite joins: One solution every 6 hours\n30+ invite joins: One solution every 3 hours",
-                    inline: false
-                }
-            )
-            .setFooter({
-                text: 'Need more help? Feel free to open a ticket!',
-                iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg'
-            });
+        const statusEmbed = accessMessage(username, interaction.guild!.channels.cache.get("952233763281182810")!.toString());
 
         await interaction.reply({embeds: [statusEmbed], ephemeral: false});
 
@@ -153,6 +162,35 @@ client.on('messageCreate', async (message) => {
     if (message.member?.roles.cache.some(role => (role.name === 'Moderator' || role.name === 'Helper' || role.name === 'BOT'))) {
         return;
     } else if (((message.channel as DiscordJS.TextChannel).name).startsWith("ticket")) {
+        message.channel.messages.fetch({limit: 100}).then(async history => {
+            let messages: string[] = []
+
+            history.forEach(message => messages.push(message.content))
+            messages.reverse()
+
+            if (messages.length < 3) {
+                let userId = (messages.at(0)?.match(/\d+/g))!.toString()
+                const member: DiscordJS.GuildMember = await message.guild!.members.fetch(userId)
+
+                for (let text of messages.slice(0, 3)) {
+                    if (!(member!.roles.cache.hasAny(
+                            "952021257870790678",
+                            "952419492577832980",
+                            "952419298196996116",
+                            "952351244532482098",
+                            "952350649335554068"
+                        )) &&
+                        (text.includes("https://www.chegg.com" || "/chegg"))) {
+
+                        const accessEmbed = accessMessage(`<@${userId}>`, message.guild!.channels.cache.get("952233763281182810")!.toString());
+
+                        await message.channel.send({embeds: [accessEmbed]});
+                        return;
+                    }
+                }
+            }
+        })
+
         return;
     }
 
@@ -204,7 +242,7 @@ client.on('messageCreate', async (message) => {
 
         channel = client.channels.cache.get("961389836344905768") as TextChannel;
 
-        if (message.content.includes('https://www.chegg.com')) {
+        if (message.content.includes('https://www.chegg.com' || "/chegg")) {
             if (premiumAccess) {
                 reply = replyMessages["chegg with premium access"];
             } else {
@@ -221,11 +259,20 @@ client.on('messageCreate', async (message) => {
         }
 
         await channel.send({
-            embeds: [{
-                title: `Make sure to use /chegg`,
-                description: `<@${userId}> feel free to open a ticket if you require additional assistance!`,
-                image: {url: 'https://cdn.discordapp.com/attachments/598334621498736650/961439354885132318/unknown.png'}
-            }]
+            embeds: [new MessageEmbed()
+                .setColor("#f2690d")
+                .setAuthor({
+                    name: "Cheggy",
+                    iconURL:
+                        "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
+                })
+                .setTitle("How to Make a request")
+                .setDescription(`<@${userId}> follow the steps shown below:`)
+                .setImage("https://cdn.discordapp.com/attachments/598334621498736650/961439354885132318/unknown.png")
+                .setFooter({
+                    text: 'Need more help? Feel free to open a ticket!',
+                    iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg'
+                })]
         })
 
         try {
