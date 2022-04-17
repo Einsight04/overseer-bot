@@ -1,4 +1,4 @@
-import DiscordJS, {Intents, MessageEmbed, TextChannel} from 'discord.js'
+import DiscordJS, {Intents, TextChannel, MessageActionRow, MessageButton, MessageEmbed} from 'discord.js'
 import dotenv from 'dotenv'
 
 
@@ -41,8 +41,26 @@ const client = new DiscordJS.Client({
 })
 
 
-client.on('ready', () => {
-    console.log('The bot is ready')
+client.on('ready', async () => {
+    console.log('Overseer is online!')
+
+
+    const welcomeChannel = client.channels.cache.get('952233283566067742') as TextChannel;
+    const messages = await welcomeChannel.messages.fetch({limit: 100});
+    const messagesByAuthor = messages.filter(m => m.author.id === '952584258889859082');
+    await welcomeChannel.bulkDelete(messagesByAuthor);
+
+    const row = new MessageActionRow()
+        .addComponents(
+            new MessageButton()
+                .setCustomId('verify')
+                .setLabel('Click to Verify')
+                .setStyle('PRIMARY'),
+        );
+
+    const channel = client.channels.cache.get('952233283566067742') as TextChannel;
+    await channel.send({components: [row]});
+
 
     const guildId = "938954164455764049"
     const guild = client.guilds.cache.get(guildId)
@@ -95,6 +113,24 @@ client.on('ready', () => {
 
 
 client.on('interactionCreate', async (interaction) => {
+    if (interaction.isButton()) {
+        const member = interaction.member as DiscordJS.GuildMember;
+
+        if (interaction.customId == "verify" && !member.roles.cache.has('952587050715066460')) {
+            await member.roles.add('952587050715066460');
+
+            await interaction.reply({
+                content: "You've successfully been verified!",
+                ephemeral: true
+            });
+        } else {
+            await interaction.reply({
+                content: "You've already been verified!",
+                ephemeral: true
+            });
+        }
+    }
+
     if (!interaction.isCommand()) {
         return
     }
@@ -136,7 +172,6 @@ client.on('interactionCreate', async (interaction) => {
     } else if (commandName === 'invite-tutorial') {
         const username = options.getString('username')!
         const statusEmbed = new MessageEmbed()
-
             .setColor("#f2690d")
             .setAuthor({
                 name: "Cheggy",
@@ -159,7 +194,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
 client.on('messageCreate', async (message) => {
-    if (message.member?.roles.cache.some(role => (role.name === 'Moderator' || role.name === 'Helper' || role.name === 'BOT'))) {
+    if (message.member?.roles.cache.some(role => (role.name === 'Moderator' || role.name === 'Helper' || role.name === 'BOT')) || message.channelId === "963886505154199582") {
         return;
     } else if (((message.channel as DiscordJS.TextChannel).name).startsWith("ticket")) {
         message.channel.messages.fetch({limit: 100}).then(async history => {
@@ -168,7 +203,7 @@ client.on('messageCreate', async (message) => {
             history.forEach(message => messages.push(message.content))
             messages.reverse()
 
-            if (messages.length < 3) {
+            if (messages.length < 4) {
                 let userId = (messages.at(0)?.match(/\d+/g))!.toString()
                 const member: DiscordJS.GuildMember = await message.guild!.members.fetch(userId)
 
@@ -187,6 +222,8 @@ client.on('messageCreate', async (message) => {
                         await message.channel.send({embeds: [accessEmbed]});
                         return;
                     }
+
+
                 }
             }
         })
@@ -204,7 +241,7 @@ client.on('messageCreate', async (message) => {
 
     let reply: string = "";
     const replyMessages = {
-        "chegg no access": `<@${userId}> to learn how to gain access please head on over to ${message.guild!.channels.cache.get("952233763281182810")!.toString()}`,
+        "chegg no access": `<@${userId}> to learn how to gain access please check out ${message.guild!.channels.cache.get("952233763281182810")!.toString()}`,
         "chegg with premium access": `<@${userId}> Please use the "/chegg" command in ${message.guild!.channels.cache.get("953088587631591474")!.toString()}`,
         "chegg with free access": `<@${userId}> Please use the "/chegg" command in ${message.guild!.channels.cache.get("952233500847792178")!.toString()}`,
         "advertisement": `<@${userId}> we have placed your account under a 15 minute timeout for violating Cheggy ${message.guild!.channels.cache.get("952236909135032340")!.toString()}`,
@@ -266,9 +303,9 @@ client.on('messageCreate', async (message) => {
                     iconURL:
                         "https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg",
                 })
-                .setTitle("How to Make a request")
+                .setTitle("Not sure how to send your question?")
                 .setDescription(`<@${userId}> follow the steps shown below:`)
-                .setImage("https://cdn.discordapp.com/attachments/598334621498736650/961439354885132318/unknown.png")
+                .setImage("https://cdn.discordapp.com/attachments/952069091986903100/962737822022893598/unknown.png")
                 .setFooter({
                     text: 'Need more help? Feel free to open a ticket!',
                     iconURL: 'https://cdn.discordapp.com/attachments/608334595510894612/944624021692092506/Cheggy_Logo.jpg'
