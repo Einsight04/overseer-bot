@@ -194,7 +194,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
 client.on('messageCreate', async (message) => {
-    if (message.member?.roles.cache.some(role => (role.name === 'Moderator' || role.name === 'Helper' || role.name === 'BOT')) || message.channelId === "963886505154199582") {
+    if (message.member?.roles.cache.some(role => (role.name === 'Moderator' || role.name === 'Helper' || role.name === 'BOT')) || message.channelId === "965693700548218961") {
         return;
     } else if (((message.channel as DiscordJS.TextChannel).name).startsWith("ticket")) {
         message.channel.messages.fetch({limit: 100}).then(async history => {
